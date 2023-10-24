@@ -4,16 +4,25 @@ import dlib
 import numpy as np
 import os
 
-def match(points):
+def match(points: list) -> str:
+    '''
+    :param points: список ключевых точек лица для определения, записано ли оно в database
+
+    Возвращает имя файла из database, соответствующее человеку или "Unknown", если файла не найдено
+    '''
     for filename in os.listdir('database'):
         loaded_array = np.load('database/' + filename, allow_pickle=True)
-        distance = sum([p.x**2 + p.y**2 for p in (loaded_array - np.array(points))])
+        distance = np.sqrt(sum([p.x**2 + p.y**2 for p in (loaded_array - np.array(points))]))
         print(distance)
         if distance < 15:
             return filename.split('.')[0]
     return "Unknown"
 
-def add_person(images, label):
+def add_person(images: list, label: str) -> None:
+    '''
+    :param images: список фотографий человека для записи
+    :param label: имя человека (имя файла)
+    '''
     face_detector = dlib.get_frontal_face_detector() # распознает лица
     shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
@@ -42,7 +51,12 @@ def add_person(images, label):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-def detect_persons(video):
+def detect_persons(video: str) -> None:
+    '''
+    :param video: название видео для определения лиц на нем
+
+    Нажать 'q', чтоб завершить выполнение
+    '''
     cap = cv2.VideoCapture(video)
     color, thick = (255, 0, 0), 10
     font = cv2.FONT_HERSHEY_SIMPLEX
