@@ -39,6 +39,9 @@ def add_person(images: list, label: str) -> None:
         x, y, w, h = rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(), rectangle.bottom() - rectangle.top()
 
         shape = shape_predictor(gray, rectangle)
+
+        print(np.array([[p.x, p.y] for p in shape.parts()]).shape)
+        
         points_array = np.array(shape.parts())
         np.save(f"database/{label}.npy", points_array)
 
@@ -65,6 +68,41 @@ def detect_persons(video: str) -> None:
     shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
     while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        rectangles = face_detector(gray, 1)
+
+
+        for rectangle in rectangles:
+            x, y, w, h = rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(), rectangle.bottom() - rectangle.top()
+            shape = shape_predictor(gray, rectangle)
+            points_array = shape.parts()
+
+            label = match(points_array)
+
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            color, thick = (255, 0, 0), 5
+
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, thick)
+            cv2.putText(frame, label, (x, y + h + 40), font, 1, color, 2)
+
+        cv2.imshow('Video', frame)
+        
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+def videocam():
+    cap = cv2.VideoCapture(0)
+    
+    face_detector = dlib.get_frontal_face_detector() # распознает лица
+    shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+    while True: 
         ret, frame = cap.read()
         if not ret:
             break
