@@ -33,7 +33,7 @@ def add_person(img: np.array, detector: FaceDetector, recognizer: FaceRecognitio
     np.save(f"database/{id}.npy", features[0])
 
 
-def read_video(cap, detector, recognizer, comporator):
+def read_capture(cap, detector, recognizer, comporator):
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -44,8 +44,6 @@ def read_video(cap, detector, recognizer, comporator):
         show_frame(frame, faces, ids)
         if cv2.waitKey(1) == ord('q'):
             break
-
-
 
 
 if __name__ == '__main__':
@@ -62,7 +60,6 @@ if __name__ == '__main__':
     # add_person(image, detector, recognizer, 'Petr')
 
     cap = cv2.VideoCapture('media/my_face.mp4')
-    read_video(cap, detector, recognizer, comparator)
-
-
+    # cap = cv2.VideoCapture(0)
+    read_capture(cap, detector, recognizer, comparator)
 
