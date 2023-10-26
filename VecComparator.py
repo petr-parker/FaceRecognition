@@ -16,15 +16,15 @@ class EuclidianComparator(VecComparotor):
         '''
         ids = []
         for vector in vectors:
-            chosen_id = -1
+            chosen_id = "-1"
             for id in os.listdir(self.database):
                 loaded_array = np.load(self.database + '/' + id, allow_pickle=True)
-                distance = np.linalg.norm(loaded_array, vector)
+                distance = np.linalg.norm(loaded_array - vector)
                 print(distance)
                 if distance < 15:
                     chosen_id = id
             ids.append(chosen_id)
-                
+        return ids
             
 
 
