@@ -20,7 +20,7 @@ class VecComparotor:
                 np.linalg.norm(loaded_array - vector)
                 print(distance)
                 if distance < self.threshold:
-                    chosen_id = id
+                    chosen_id = id.split('.')[0]
             ids.append(chosen_id)
         return ids
 

@@ -60,15 +60,15 @@ if __name__ == '__main__':
     #                      'prototxt' : 'deploy.prototxt', }
     # recognizer = OpenCVdnnRecognizer(recognizer_config)
     
-    comporator_config = {'database' : 'database', 'threshold' : 0.0001}
-    comparator = ConeComparator(comporator_config)
+    comporator_config = {'database' : 'database', 'threshold' : 0.5}
+    comparator = EuclidianComparator(comporator_config)
 
     # image = cv2.imread('media/my_face.jpg')
     # add_person(image, detector, recognizer, 'Petr')
 
-    image = cv2.imread('media/many_face.jpg')
+    image = cv2.imread('media/other_face.jpg')
     process_image(detector, recognizer, comparator, image)
 
-    # cap = cv2.VideoCapture('media/my_face.mp4')
-    # process_capture(detector, recognizer, comparator)
+    cap = cv2.VideoCapture('media/my_face.mp4')
+    process_capture(detector, recognizer, comparator, cap)
 
