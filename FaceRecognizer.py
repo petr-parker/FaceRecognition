@@ -35,24 +35,20 @@ class DlibRecognizer(FaceRecognizer):
             features.append(features_array)
         return features
     
-# class OpenCVdnnRecognizer(FaceRecognizer):
-#     def __init__(self, config: dict) -> bool:
-#         self.net = cv2.dnn.readNetFromCaffe(config['prototxt'], config['model'])
+class OpenCVdnnRecognizer(FaceRecognizer):
+    def __init__(self, config: dict) -> bool:
+        self.net = cv2.FaceRecognizerSF.create(config['model'], "")
     
-#     def load_model():
-#         v = ftk.Verification()
-#         v.load_model("./Models/FaceDetection/")
-#         v.initial_input_output_tensors()
-#         return v
-    
-#     def extract(self, img: np.array, faces: list) -> list:
+    def extract(self, img: np.array, faces: list) -> list:
 
-#         self.blob = cv2.dnn.blobFromImage(cv2.resize(img, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+        self.blob = cv2.dnn.blobFromImage(cv2.resize(img, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
 
-#         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-#         features = []
-#         for face in faces:
-#             features_array = FaceDetection.v.img_to_encoding(cv2.resize(face, (160, 160)), FaceDetection.image_size)
-#             features.append(features_array)
-#         return features
+        features = []
+        for face in faces:
+            face1_align = self.recognizer.alignCrop(gray, faces1[1][0])
+            face1_align = self.net.alignCrop(img1, faces1[1][0])
+            features_array = self.net.feature(face1_align)
+            features.append(features_array)
+        return features

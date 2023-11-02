@@ -54,11 +54,10 @@ if __name__ == '__main__':
     detector_config = {}
     detector = DlibDetector(detector_config)
 
-    recognizer_config = {'model' : 'models/shape_predictor_68_face_landmarks.dat' }
-    recognizer = DlibRecognizer(recognizer_config)
-    # recognizer_config = {'model' : 'models/res10_300x300_ssd_iter_140000_fp16.caffemodel',
-    #                      'prototxt' : 'deploy.prototxt', }
-    # recognizer = OpenCVdnnRecognizer(recognizer_config)
+    # recognizer_config = {'model' : 'models/shape_predictor_68_face_landmarks.dat' }
+    # recognizer = DlibRecognizer(recognizer_config)
+    recognizer_config = {'model' : 'models/face_recognition_sface_2021dec.onnx' }
+    recognizer = OpenCVdnnRecognizer(recognizer_config)
     
     comporator_config = {'database' : 'database', 'threshold' : 0.5}
     comparator = EuclidianComparator(comporator_config)
@@ -66,9 +65,9 @@ if __name__ == '__main__':
     # image = cv2.imread('media/my_face.jpg')
     # add_person(image, detector, recognizer, 'Petr')
 
-    image = cv2.imread('media/other_face.jpg')
-    process_image(detector, recognizer, comparator, image)
+    # image = cv2.imread('media/other_face.jpg')
+    # process_image(detector, recognizer, comparator, image)
 
     cap = cv2.VideoCapture('media/my_face.mp4')
-    process_capture(detector, recognizer, comparator, cap)
+    process_capture(detector, recognizer, comparator)
 
