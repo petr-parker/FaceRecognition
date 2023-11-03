@@ -8,7 +8,7 @@ def show_frame(img, faces, labels):
     color, thick = (255, 0, 0), 5
     font = cv2.FONT_HERSHEY_SIMPLEX
     for face, label in zip(faces, labels):
-        x, y, w, h = face
+        x, y, w, h = [int(el) for el in face[:4]]
         cv2.rectangle(img, (x, y), (x + w, y + h), color, thick)
         cv2.putText(img, label, (x, y + h + 40), font, 1, color, 2)
     cv2.imshow("Frame", img)
@@ -46,30 +46,49 @@ def process_capture(detector, recognizer, comporator, cap=None):
         show_frame(frame, faces, labels)
         if cv2.waitKey(1) == ord('q'):
             break
-        if cv2.waitKey(1) == ord('s'):
-            id = 'Kate'
+        if cv2.waitKey(1) == ord('w'):
+            id = 'Petr'
             np.save(f"database/{id}.npy", features[0])
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    detector_config = {}
-    detector = DlibDetector(detector_config)
+    # detector_config = {}
+    # detector = DlibDetector(detector_config)
+
+    detector_config = {
+                        'model' : 'models/face_detection_yunet_2023mar.onnx',
+                        'inputsize' : (320, 320),
+                        'confthreshol' : 0.9,
+                        'nmsthreshold' : 0.3,
+                        'topk' : 1000,
+                        'backendid' : cv2.dnn.DNN_BACKEND_OPENCV,
+                        'targetid' : cv2.dnn.DNN_TARGET_CPU,
+                    }
+    detector = YunetDetector(detector_config)
+
 
     # recognizer_config = {'model' : 'models/shape_predictor_68_face_landmarks.dat' }
     # recognizer = DlibRecognizer(recognizer_config)
     recognizer_config = {'model' : 'models/face_recognition_sface_2021dec.onnx' }
     recognizer = OpenCVdnnRecognizer(recognizer_config)
     
-    comporator_config = {'database' : 'database', 'threshold' : 1.128}
+    comporator_config = {'database' : 'database', 'threshold' : 10}
     comparator = EuclidianComparator(comporator_config)
 
-    # image = cv2.imread('media/Shaldon.jpg')
+    # image = cv2.imread('media/my_face.jpg')
     # add_person(image, detector, recognizer, 'Shaldon')
 
-    # image = cv2.imread('media/my_face.jpg')
-    # process_image(detector, recognizer, comparator, image)
+    image = cv2.imread('media/shaldon.webp')
+    process_image(detector, recognizer, comparator, image)
 
-    cap = cv2.VideoCapture('media/my_face.mp4')
-    process_capture(detector, recognizer, comparator)
+    # cap = cv2.VideoCapture('media/my_face.mp4')
+    # process_capture(detector, recognizer, comparator)
+
+
+
+
+
+
+
 

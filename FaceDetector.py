@@ -24,3 +24,34 @@ class DlibDetector(FaceDetector):
             faces.append((x, y, w, h))
         return faces
 
+class YunetDetector(FaceDetector):
+    def __init__(self, config: dict) -> bool:
+        self._modelPath = config['model']
+        self._inputSize = config['inputsize']
+        self._confThreshold = config['confthreshol']
+        self._nmsThreshold = config['nmsthreshold']
+        self._topK = config['topk']
+        self._backendId = config['backendid']
+        self._targetId = config['targetid']
+
+        self._model = cv2.FaceDetectorYN.create(
+            model=self._modelPath,
+            config="",
+            input_size=self._inputSize,
+            score_threshold=self._confThreshold,
+            nms_threshold=self._nmsThreshold,
+            top_k=self._topK,
+            backend_id=self._backendId,
+            target_id=self._targetId)
+
+    def setInputSize(self, input_size):
+        self._model.setInputSize(tuple(input_size))
+
+    def detect(self, image):
+        h, w, _ = image.shape
+        self.setInputSize([w, h])
+        faces = self._model.detect(image)
+        if faces[1] is None:
+            return []
+        else:
+            return faces[1]
