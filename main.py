@@ -25,8 +25,9 @@ def add_person(img: np.array, detector: FaceDetector, recognizer: FaceRecognizer
 def process_image(detector, recognizer, comporator, image):
     faces = detector.detect(image)
     features = recognizer.extract(image, faces)
-    ids = comporator.compare(features)
-    show_frame(image, faces, ids)
+    ids, confs = comporator.compare(features)
+    labels = [f"{id}: {int(conf * 100)}%" for id, conf in zip(ids, confs)]
+    show_frame(image, faces, labels)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -40,12 +41,13 @@ def process_capture(detector, recognizer, comporator, cap=None):
             break
         faces = detector.detect(frame)
         features = recognizer.extract(frame, faces)
-        ids = comporator.compare(features)
-        show_frame(frame, faces, ids)
+        ids, confs = comporator.compare(features)
+        labels = [f"{id}: {int(conf * 100)}%" for (id, conf) in zip(ids, confs)]
+        show_frame(frame, faces, labels)
         if cv2.waitKey(1) == ord('q'):
             break
         if cv2.waitKey(1) == ord('s'):
-            id = 'Petr'
+            id = 'Kate'
             np.save(f"database/{id}.npy", features[0])
     cv2.destroyAllWindows()
 
@@ -59,13 +61,13 @@ if __name__ == '__main__':
     recognizer_config = {'model' : 'models/face_recognition_sface_2021dec.onnx' }
     recognizer = OpenCVdnnRecognizer(recognizer_config)
     
-    comporator_config = {'database' : 'database', 'threshold' : 0.5}
+    comporator_config = {'database' : 'database', 'threshold' : 1.128}
     comparator = EuclidianComparator(comporator_config)
 
-    # image = cv2.imread('media/my_face.jpg')
-    # add_person(image, detector, recognizer, 'Petr')
+    # image = cv2.imread('media/Shaldon.jpg')
+    # add_person(image, detector, recognizer, 'Shaldon')
 
-    # image = cv2.imread('media/other_face.jpg')
+    # image = cv2.imread('media/my_face.jpg')
     # process_image(detector, recognizer, comparator, image)
 
     cap = cv2.VideoCapture('media/my_face.mp4')

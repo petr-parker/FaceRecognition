@@ -1,6 +1,8 @@
 import argparse
 import numpy as np
 import cv2 as cv
+from FaceDetector import DlibDetector
+
 def str2bool(v):
     if v.lower() in ['on', 'yes', 'true', 'y', 't']:
         return True
@@ -33,7 +35,9 @@ def visualize(input, faces, fps, thickness=2):
             cv.circle(input, (coords[12], coords[13]), 2, (0, 255, 255), thickness)
     cv.putText(input, 'FPS: {:.2f}'.format(fps), (1, 16), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 if __name__ == '__main__':
-    
+    detector_config = {}
+    my_detector = DlibDetector(detector_config)
+
     detector = cv.FaceDetectorYN.create(
         args.face_detection_model,
         "",
@@ -53,17 +57,14 @@ if __name__ == '__main__':
         tm.start()
         
         detector.setInputSize((img1Width, img1Height))
-        faces1 = detector.detect(img1)
+        faces1 = my_detector.detect(img1)
         
         tm.stop()
         print(faces1)
-        assert faces1[1] is not None, 'Cannot find a face in {}'.format(args.image1)
+        assert faces1[0] is not None, 'Cannot find a face in {}'.format(args.image1)
         # Draw results on the input image
-        visualize(img1, faces1, tm.getFPS())
-        # Save results if save is true
-        if args.save:
-            print('Results saved to result.jpg\n')
-            cv.imwrite('result.jpg', img1)
+        # visualize(img1, faces1, tm.getFPS())
+
         # Visualize results in a new window
         cv.imshow("image1", img1)
         if args.image2 is not None:
@@ -71,24 +72,24 @@ if __name__ == '__main__':
             tm.reset()
             tm.start()
             detector.setInputSize((img2.shape[1], img2.shape[0]))
-            faces2 = detector.detect(img2)
+            faces2 = my_detector.detect(img2)
             tm.stop()
-            assert faces2[1] is not None, 'Cannot find a face in {}'.format(args.image2)
-            visualize(img2, faces2, tm.getFPS())
+            assert faces2[0] is not None, 'Cannot find a face in {}'.format(args.image2)
+            # visualize(img2, faces2, tm.getFPS())
             cv.imshow("image2", img2)
             
             recognizer = cv.FaceRecognizerSF.create(
             args.face_recognition_model,"")
             
             
-            face1_align = recognizer.alignCrop(img1, faces1[1][0])
-            face2_align = recognizer.alignCrop(img2, faces2[1][0])
+            face1_align = recognizer.alignCrop(img1, faces1[0][0])
+            face2_align = recognizer.alignCrop(img2, faces2[0][0])
             # Extract features
             face1_feature = recognizer.feature(face1_align)
             face2_feature = recognizer.feature(face2_align)
             
-            cosine_similarity_threshold = 0.363
-            l2_similarity_threshold = 1.128
+            cosine_similarity_threshold = 0.9
+            l2_similarity_threshold = 0.4
             
             cosine_score = recognizer.match(face1_feature, face2_feature, cv.FaceRecognizerSF_FR_COSINE)
             l2_score = recognizer.match(face1_feature, face2_feature, cv.FaceRecognizerSF_FR_NORM_L2)

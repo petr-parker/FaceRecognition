@@ -38,17 +38,11 @@ class DlibRecognizer(FaceRecognizer):
 class OpenCVdnnRecognizer(FaceRecognizer):
     def __init__(self, config: dict) -> bool:
         self.net = cv2.FaceRecognizerSF.create(config['model'], "")
-    
+        
     def extract(self, img: np.array, faces: list) -> list:
-
-        self.blob = cv2.dnn.blobFromImage(cv2.resize(img, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
-
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
         features = []
         for face in faces:
-            face1_align = self.recognizer.alignCrop(gray, faces1[1][0])
-            face1_align = self.net.alignCrop(img1, faces1[1][0])
-            features_array = self.net.feature(face1_align)
+            face_align = self.net.alignCrop(img, face)
+            features_array = self.net.feature(face_align)
             features.append(features_array)
         return features
