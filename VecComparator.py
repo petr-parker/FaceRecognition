@@ -6,10 +6,10 @@ class VecComparotor:
         self.database = config['database']
         self.threshold = config['threshold']
     def dist(self, vec1: np.array, vec2: np.array) -> float:
-        pass
+        raise NotImplementedError
     def compare(self, vectors: list) -> list:
         '''
-        Возвращает список id (-1, если не найден)
+        Возвращает списки id, confidence (-1, если не найден)
         '''
         ids = []
         confidences = []
@@ -39,7 +39,7 @@ class ConeComparator(VecComparotor):
         super().__init__(config)
     def compare(self, vectors: list) -> list:
         '''
-        Возвращает список id (-1, если не найден)
+        Возвращает списки id, confidence (-1, если не найден)
         '''
         ids = []
         for vector in vectors:
