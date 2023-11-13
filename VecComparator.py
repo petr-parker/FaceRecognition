@@ -3,30 +3,29 @@ import numpy as np
 
 class VecComparotor:
     def __init__(self, config: dict) -> bool:
-        self.database = config['database']
         self.threshold = config['threshold']
     def dist(self, vec1: np.array, vec2: np.array) -> float:
         raise NotImplementedError
-    def compare(self, vectors: list) -> list:
+    def compare(self, features, data) -> list:
         '''
         Возвращает списки id, confidence (-1, если не найден)
         '''
-        ids = []
-        confidences = []
-        for vector in vectors:
+        ids, labels, confidences = [], [], []
+        for feature in features:
             chosen_id = "-1"
+            chosen_label = ""
             confidence = 0 
-            for id in os.listdir(self.database):
-                loaded_array = np.load(self.database + '/' + id, allow_pickle=True)
-                distance = self.dist(loaded_array, vector)
-                np.linalg.norm(loaded_array - vector)
-                print(id,distance)
+            for row in data:
+                other = np.array(row['sface'])
+                distance = self.dist(other, features)
                 if distance < self.threshold:
-                    chosen_id = id.split('.')[0]
+                    chosen_id = row['id_employee']
+                    chosen_label = row['firstname'] + row['lastname']
                     confidence = (self.threshold - distance) / self.threshold
             ids.append(chosen_id)
+            labels.append(chosen_label)
             confidences.append(confidence)
-        return ids, confidences
+        return ids, labels, confidences
 
 class EuclidianComparator(VecComparotor):
     def __init__(self, config: dict) -> bool:

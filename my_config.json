@@ -1,0 +1,10 @@
+{
+    "firstname" : "Petr",
+    "middlename" : "Konstantinovich",
+    "lastname" : "Babkin",
+    "photo_path" : "media/my_face2.jpg", 
+    "birth_date" : "2002-11-04",
+    "job_name" : "programmer",
+    "phone_number" : "89851613739",
+    "net_name" : "sface"
+}
